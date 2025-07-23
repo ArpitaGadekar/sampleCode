@@ -1,2 +1,66 @@
+# CRUD Operations in Node.js with Express
+This project demonstrates how to perform **CRUD (Create, Read, Update, Delete)** operations using **Express** library in **Node.js**.
+
 # sampleCode
-A CRUD API built with Node.js
+
+const express = require('express');
+const app = express();
+
+// Middleware to parse JSON bodies
+app.use(express.json());
+
+let items = [
+  { id: 1, title: "Three Men in a Boat", author: "Jerome K. Jerome" },
+  { id: 2, title: "To Kill a Mockingbird", author: "Harper Lee" },
+];
+
+// Get all items
+app.get('/items', (req, res) => {
+  res.json(items);
+});
+
+// Get a single item by ID
+app.get('/items/:id', (req, res) => {
+  const item = items.find(b => b.id === parseInt(req.params.id));
+  if (!item) return res.status(404).send('item not found');
+  res.json(item);
+});
+
+// Add a new item
+app.post('/items', (req, res) => {
+  const { title, author } = req.body;
+  const newitem = {
+    id: items.length + 1,
+    title,
+    author
+  };
+  items.push(newitem);
+  res.status(201).json(newitem);
+});
+
+// Update a item
+app.put('/items/:id', (req, res) => {
+  const item = items.find(b => b.id === parseInt(req.params.id));
+  if (!item) return res.status(404).send('item not found');
+  
+  item.title = req.body.title || item.title;
+  item.author = req.body.author || item.author;
+  
+  res.json(item);
+});
+
+// Delete a item
+app.delete('/items/:id', (req, res) => {
+  const itemIndex = items.findIndex(b => b.id === parseInt(req.params.id));
+  if (itemIndex === -1) return res.status(404).send('item not found');
+  
+  const deleteditem = items.splice(itemIndex, 1);
+  res.json(deleteditem);
+});
+
+
+// Start the server on port 3000
+app.listen(3000, () => {
+  console.log('Server is running on http://localhost:3000');
+});
+
